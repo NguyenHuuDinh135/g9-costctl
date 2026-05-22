@@ -4,6 +4,16 @@ A starter scaffold for a small AWS-resource-management CLI. **The CLI structure
 is built; you implement the command logic.** Fork this repo, fill in the
 stubs, make the tests pass, customize for your group, then submit.
 
+## 📸 Visuals & Verification
+
+### 1. Pytest Test Suite Success (25/25 Green)
+![Pytest Success](sample_output/tests_passing.png)
+
+### 2. costctl CLI Help Menu
+![CLI Help Menu](sample_output/help_cli.png)
+
+---
+
 > **Side challenge is OPTIONAL and does NOT count toward W6 score or bonus cap.**
 > Recognition is separate (Slack callout / Phase 2 selection / portfolio).
 > See `outputs/W6/W6_downtime_exercises.md` in the XBrain program repo for
