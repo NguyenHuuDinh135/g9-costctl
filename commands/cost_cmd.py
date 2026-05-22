@@ -60,10 +60,40 @@ from commands._common import parse_kv
 
 
 def run(args):
-    """Entry point.
+    """Entry point."""
+    tag_key, tag_val = parse_kv(args.tag)
+    end_date = date.today()
+    start_date = end_date - timedelta(days=args.days)
 
-    Args set by argparse:
-        args.tag   — "key=value" string (REQUIRED)
-        args.days  — int, default 7
-    """
-    raise NotImplementedError("TODO: implement cost — see module docstring")
+    start_str = start_date.strftime("%Y-%m-%d")
+    end_str = end_date.strftime("%Y-%m-%d")
+
+    ce = boto3.client("ce")
+    try:
+        resp = ce.get_cost_and_usage(
+            TimePeriod={"Start": start_str, "End": end_str},
+            Granularity="DAILY",
+            Metrics=["UnblendedCost"],
+            Filter={"Tags": {"Key": tag_key, "Values": [tag_val]}},
+            GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}],
+        )
+    except Exception as e:
+        print(f"Failed to query Cost Explorer: {e}")
+        return
+
+    costs = defaultdict(float)
+    for time_period in resp.get("ResultsByTime", []):
+        for group in time_period.get("Groups", []):
+            service = group["Keys"][0]
+            amount = float(group["Metrics"]["UnblendedCost"]["Amount"])
+            costs[service] += amount
+
+    sorted_costs = sorted(costs.items(), key=lambda x: x[1], reverse=True)
+    total_cost = sum(costs.values())
+
+    print(f"Cost for {args.tag} over last {args.days} days ({start_str} → {end_str}):")
+    print("-" * 60)
+    for service, cost in sorted_costs:
+        print(f"  {service:<45} $ {cost:>7.2f}")
+    print("-" * 60)
+    print(f"  {'TOTAL':<45} $ {total_cost:>7.2f}")

@@ -43,29 +43,47 @@ USEFUL COMBO
       --set Application=HealthBot
 """
 import boto3
+from botocore.exceptions import ClientError
 
 from commands._common import parse_kv
 
 
 def _to_tags(set_args):
     """Convert ['k1=v1', 'k2=v2'] to [{'Key':'k1','Value':'v1'}, ...]."""
-    raise NotImplementedError("TODO: implement _to_tags using parse_kv")
+    return [{"Key": k, "Value": v} for k, v in [parse_kv(s) for s in set_args]]
 
 
 def _tag_ec2(rid, tags):
-    raise NotImplementedError("TODO: implement _tag_ec2 using create_tags")
+    ec2 = boto3.client("ec2")
+    ec2.create_tags(Resources=[rid], Tags=tags)
 
 
 def _tag_rds(rid, tags):
-    raise NotImplementedError("TODO: implement _tag_rds — remember to fetch ARN first")
+    rds = boto3.client("rds")
+    db = rds.describe_db_instances(DBInstanceIdentifier=rid)["DBInstances"][0]
+    arn = db["DBInstanceArn"]
+    rds.add_tags_to_resource(ResourceName=arn, Tags=tags)
 
 
 def _tag_s3(rid, tags):
-    raise NotImplementedError("TODO: implement _tag_s3 — MERGE with existing tags, don't replace")
+    s3 = boto3.client("s3")
+    try:
+        resp = s3.get_bucket_tagging(Bucket=rid)
+        existing = resp.get("TagSet", [])
+    except ClientError:
+        existing = []
+
+    merged_dict = {t["Key"]: t["Value"] for t in existing}
+    for t in tags:
+        merged_dict[t["Key"]] = t["Value"]
+
+    merged_tag_set = [{"Key": k, "Value": v} for k, v in merged_dict.items()]
+    s3.put_bucket_tagging(Bucket=rid, Tagging={"TagSet": merged_tag_set})
 
 
 def _tag_volume(rid, tags):
-    raise NotImplementedError("TODO: implement _tag_volume using create_tags")
+    ec2 = boto3.client("ec2")
+    ec2.create_tags(Resources=[rid], Tags=tags)
 
 
 DISPATCH = {
@@ -77,11 +95,13 @@ DISPATCH = {
 
 
 def run(args):
-    """Entry point.
-
-    Args set by argparse:
-        args.type  — one of "ec2", "rds", "s3", "volume"
-        args.id    — resource identifier
-        args.set   — list[str], each "key=value"
-    """
-    raise NotImplementedError("TODO: implement run() — see module docstring")
+    """Entry point."""
+    tags = _to_tags(args.set)
+    try:
+        DISPATCH[args.type](args.id, tags)
+        tags_str = ", ".join(f"{t['Key']}={t['Value']}" for t in tags)
+        print(f"Applied {len(tags)} tag(s) to {args.type} {args.id}: {tags_str}")
+    except ClientError as e:
+        code = e.response["Error"]["Code"]
+        message = e.response["Error"]["Message"]
+        print(f"AWS error [{code}]: {message}")

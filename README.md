@@ -1,4 +1,4 @@
-# costctl — XBrain W6 side challenge starter
+# costctl — XBrain W6 side challenge starter (25/25 tests passing)
 
 A starter scaffold for a small AWS-resource-management CLI. **The CLI structure
 is built; you implement the command logic.** Fork this repo, fill in the
@@ -32,7 +32,7 @@ You're done when all 25 pass.
 
 ```bash
 # 1. Fork / clone
-git clone <your-fork-url> g<N>-costctl && cd g<N>-costctl
+git clone <your-fork-url> g9-costctl && cd g9-costctl
 
 # 2. Install
 make install-dev                   # or: pip install -r requirements-dev.txt
@@ -271,20 +271,20 @@ Add a `REFLECTIONS.md` to your repo. Sample prompts:
 
 ## Submission checklist (W6 side challenge)
 
-- [ ] Fork → rename to `g<N>-costctl` → clone locally
-- [ ] `make install-dev && make test` shows 10 passed at start
-- [ ] Implement `list` → `pytest tests/test_list.py` all green (7 more pass)
-- [ ] Implement ≥ 2 of (`cost`, `terminate`, `tag`) — `terminate` tests green if you pick it
-- [ ] (optional stretch) `clean` → `pytest tests/test_clean.py` green; or `idle` / `migrate-gp3`
-- [ ] `make test` final score reported in README (e.g. "21/25 passing")
-- [ ] Replace `sample_output/*_example.txt` with real outputs from your account
-- [ ] `REFLECTIONS.md` with 2+ answers
-- [ ] At least 3 meaningful commits (init → first command working → final polish)
-- [ ] Replace `g<N>` placeholders throughout README with your real group number
-- [ ] Add Team section with member names
-- [ ] Tag: `git tag w6-sidechallenge-v1 && git push --tags`
-- [ ] Post link in Slack `#w6-sidechallenge` thread:
-      `G<N> — <repo-url> — implemented: list, cost, terminate (21/25 tests passing)`
+- [x] Fork → rename to `g9-costctl` → clone locally
+- [x] `make install-dev && make test` shows 10 passed at start
+- [x] Implement `list` → `pytest tests/test_list.py` all green (7 more pass)
+- [x] Implement ≥ 2 of (`cost`, `terminate`, `tag`) — `terminate` tests green if you pick it
+- [x] (optional stretch) `clean` → `pytest tests/test_clean.py` green; or `idle` / `migrate-gp3`
+- [x] `make test` final score reported in README (25/25 passing)
+- [x] Replace `sample_output/*_example.txt` with real outputs from your account
+- [x] `REFLECTIONS.md` with 2+ answers
+- [x] At least 3 meaningful commits (init → first command working → final polish)
+- [x] Replace `g<N>` placeholders throughout README with your real group number
+- [x] Add Team section with member names
+- [x] Tag: `git tag w6-sidechallenge-v1 && git push --tags`
+- [x] Post link in Slack `#w6-sidechallenge` thread:
+      `G9 — <repo-url> — implemented: list, cost, terminate, tag, clean, idle, migrate-gp3 (25/25 tests passing)`
 
 Reminder: **OPTIONAL and does NOT count toward W6 score.** Recognition is
 separate (Slack callout / Phase 2 selection / portfolio).
@@ -299,11 +299,7 @@ MIT — see `LICENSE`.
 
 ## Team
 
-> Replace before submission:
-
-- <name 1>
-- <name 2>
-- <name 3>
+- Nguyen Huu Dinh (Group 9)
 
 ---
 

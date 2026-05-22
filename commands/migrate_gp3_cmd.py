@@ -73,10 +73,56 @@ GP3_PRICE = 0.08
 
 
 def run(args):
-    """Entry point.
+    """Entry point."""
+    ec2 = boto3.client("ec2")
+    try:
+        resp = ec2.describe_volumes(Filters=[{"Name": "volume-type", "Values": ["gp2"]}])
+        volumes = resp.get("Volumes", [])
+    except Exception as e:
+        print(f"Failed to fetch EBS volumes: {e}")
+        return
 
-    Args set by argparse:
-        args.apply       — bool, default False (dry-run)
-        args.volume_id   — optional str, only migrate this volume when --apply
-    """
-    raise NotImplementedError("TODO: implement migrate-gp3 — see module docstring")
+    if not args.apply:
+        print(f"gp2 volumes (price delta ${GP2_PRICE - GP3_PRICE:.3f}/GB-month):")
+        print("-" * 78)
+        total_savings = 0.0
+        for vol in volumes:
+            vid = vol["VolumeId"]
+            size = vol["Size"]
+            attachments = vol.get("Attachments", [])
+            attached = attachments[0]["InstanceId"] if attachments else "(none)"
+            savings = size * (GP2_PRICE - GP3_PRICE)
+            total_savings += savings
+            print(f"  {vid:<24}  {size:>5}GB  attached={attached:<16}  ${savings:.2f}/mo savings")
+        print("-" * 78)
+        print(f"Total potential savings: ${total_savings:.2f}/mo")
+        print()
+        print("(dry-run — pass --apply --volume-id <id> to migrate one, or --apply to migrate ALL)")
+        return
+
+    # Apply mode
+    vids = []
+    if args.volume_id:
+        vids = [args.volume_id]
+    else:
+        vids = [vol["VolumeId"] for vol in volumes]
+
+    if not vids:
+        print("No gp2 volumes found to migrate.")
+        return
+
+    for vid in vids:
+        try:
+            ec2.modify_volume(
+                VolumeId=vid,
+                VolumeType="gp3",
+                Iops=3000,
+                Throughput=125,
+            )
+            print(f"  → modify_volume issued for {vid} (gp3, 3000 IOPS, 125 MiB/s)")
+        except Exception as e:
+            print(f"  Failed to migrate {vid}: {e}")
+
+    print()
+    print("Volume(s) entering 'modifying' → 'optimizing' state. App stays online.")
+    print("Use `costctl list volume` after ~30 minutes to confirm 'in-use' + gp3.")
