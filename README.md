@@ -7,10 +7,19 @@ stubs, make the tests pass, customize for your group, then submit.
 ## 📸 Visuals & Verification
 
 ### 1. Pytest Test Suite Success (25/25 Green)
-![Pytest Success](sample_output/tests_passing.png)
+![Pytest Success](sample_output/swappy-20260522-171514.png)
 
 ### 2. costctl CLI Help Menu
-![CLI Help Menu](sample_output/help_cli.png)
+![CLI Help Menu](sample_output/swappy-20260522-171538.png)
+
+### 3. costctl CLI List Commands (EC2 & Volume)
+![CLI List Commands](sample_output/swappy-20260522-171612.png)
+
+### 4. AWS Console — RDS Aurora & RDS Databases (ap-southeast-1)
+![AWS RDS Console](sample_output/Screenshot%202026-05-22%20at%2017-19-31%20Databases%20Aurora%20and%20RDS%20ap-southeast-1.png)
+
+### 5. AWS Console — EC2 Instances (ap-southeast-1)
+![AWS EC2 Console](sample_output/Screenshot%202026-05-22%20at%2017-19-39%20Instances%20EC2%20ap-southeast-1.png)
 
 ---
 
